@@ -1,0 +1,7 @@
+{
+  "Burn_notes_Api_Insert": ["burn_id", "note_text"],
+  "Burn_Temperature_Api_Get_By_Burn_And_Seq": [
+    "burn_id_input",
+    "sequence_input"
+  ]
+}

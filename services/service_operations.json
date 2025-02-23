@@ -1,0 +1,202 @@
+{
+  "OvenService": {
+    "Get_By_Oven_Id": {
+      "operation_name": "Oven_Api_Get_By_Oven_id",
+      "parameters": ["p_id"],
+      "fetch_mode": "one"
+    },
+    "Get_All": {
+      "operation_name": "Oven_Api_Get_All_Ovens",
+      "parameters": [],
+      "fetch_mode": "all"
+    }, 
+    "Save": {
+      "operation_name": "Oven_Api_Create_Or_Update_Oven",
+      "parameters": ["oven_id",
+                    "name",
+                    "max_temp_positive",
+                    "max_temp_negative",
+                    "location",
+                    "power",
+                    "thermometer_type",
+                    "thermometer_pin",
+                    "burner_pin",
+                    "thermocouple_type",
+                    "gpio_sensor_cs",
+                    "gpio_sensor_clock",
+                    "gpio_sensor_data",
+                    "gpio_sensor_di",
+                    "gpio_cool",
+                    "gpio_hatchet",
+                    "gpio_heat",
+                    "gpio_failsafe",
+                    "sensor_time_wait",
+                    "pid_kp",
+                    "pid_ki",
+                    "pid_kd",
+                    "temp_scale",
+                    "emergency_shutoff_temp",
+                    "kiln_must_catch_up",
+                    "pid_control_window",
+                    "thermocouple_offset",
+                    "temperature_average_samples",
+                    "ac_freq_50hz",
+                    "automatic_restarts",
+                    "automatic_restart_window",
+                    "simulate",
+                    "sim_t_env",
+                    "sim_c_heat",
+                    "sim_c_oven",
+                    "sim_p_heat",
+                    "sim_R_o_nocool",
+                    "sim_R_o_cool",
+                    "sim_R_ho_noair",
+                    "sim_R_ho_air",
+                    "kwh_rate",
+                    "currency_type",
+                    "kw_elements",
+                    "hatchet_mode"
+],
+      "fetch_mode": "all"
+    }
+  },
+
+
+  "BurnImageService": {
+    "Get_By_Burn_Id": {
+      "operation_name": "Burn_images_Api_Get_By_Burn_Id",
+      "parameters": ["p_id"],
+      "fetch_mode": "all"
+    }
+  },
+
+
+
+  "BurnCurveService": {
+    "Get_Curve_By_Id": {
+      "operation_name": "Burn_Curve_Api_Get_Curve",
+      "parameters": ["p_burn_id"],
+      "fetch_mode": "all", 
+      "function_name": "TemplateCurveService_SplitCurveData"
+    }
+  },
+
+
+
+
+  "BurnTemperatureService": {
+    "Insert": {
+      "operation_name": "Burn_temperature_data_Api_Insert",
+      "parameters": [
+        "p_burn_id",
+        "p_ispoint",
+        "p_setpoint",
+        "p_err",
+        "p_pid",
+        "p_p",
+        "p_i",
+        "p_d",
+        "p_heat_on",
+        "p_heat_off",
+        "p_runtime"
+      ],
+      "fetch_mode": "none"
+    },
+    "Get_By_Burn_And_Seq": {
+      "operation_name": "Burn_Temperature_Api_Get_By_Burn_And_Seq",
+      "parameters": ["burn_id_input", "sequence_input"],
+      "fetch_mode": "all"
+    },
+    "Get_Latest": {
+      "operation_name": "Burn_temperature_data_Api_Get_Latest",
+      "parameters": ["p_burn_id"],
+      "fetch_mode": "one"
+    }
+  },
+
+
+  "BurnService": {
+    "Get_By_Burn_Id": {
+      "operation_name": "Burn_Api_Get_By_Burn_Id",
+      "parameters": ["p_burn_id"],
+      "fetch_mode": "one"
+    },
+    "Get_All": {
+      "operation_name": "Burn_Api_Get_All_Burns",
+      "parameters": [],
+      "fetch_mode": "all"
+    },
+    "UpdateStatus": {
+      "operation_name": "Burn_Api_Update_Status",
+      "parameters": ["p_burn_id", "p_status"],
+      "fetch_mode": "none"
+    }
+  },
+
+
+
+  "TemplateCurveService": {
+    "Get_Curve": {
+      "operation_name": "Template_Curve_Api_Get_Curve",
+      "parameters": ["p_template_id"],
+      "fetch_mode": "one"
+    }
+  },
+
+  "TemplateService": {
+    "Get_All": {
+      "operation_name": "Template_Api_Get_All_Templates",
+      "parameters": [],
+      "fetch_mode": "all"
+    },
+    "Get_Cruve": {
+      "operation_name": "Template_Api_Get_Curve",
+      "parameters": ["p_template_id"],
+      "fetch_mode": "one"
+    }, 
+    "Insert": {
+      "operation_name": "Template_Api_Create_Template",
+      "parameters": ["name"],
+      "fetch_mode": "one"
+    }
+  },
+
+  "TranslationService": {
+    "Get_All": {
+      "operation_name": "Translation_Api_Get_All",
+      "parameters": [],
+      "fetch_mode": "all"
+    },
+    "Update": {
+      "operation_name": "Translation_Api_Update",
+      "parameters": ["input_field", "input_language", "input_text"],
+      "fetch_mode": "none"
+    }
+  },
+
+  "BurnLogService": {
+    "Get_All": {
+      "operation_name": "Burn_Log_Api_Get_All",
+      "parameters": [],
+      "fetch_mode": "all"
+    },
+    "Get_By_Id": {
+      "operation_name": "Burn_Log_Api_Get_By_Id",
+      "parameters": ["p_burn_id"],
+      "fetch_mode": "one"
+    }
+  },
+
+  "BurnNotesService": {
+    "Insert": {
+      "operation_name": "Burn_notes_Api_Insert",
+      "parameters": ["p_burn_id", "p_note_text"],
+      "fetch_mode": "none"
+    },
+    "Get_By_Brun_Id": {
+      "operation_name": "Burn_notes_Api_Get_By_Burn",
+      "parameters": ["p_burn_id"],
+      "fetch_mode": "all"
+    }
+  }
+}
