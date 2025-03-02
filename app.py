@@ -39,7 +39,7 @@ app.register_blueprint(image_api_bp)
 app.register_blueprint(oven_api_bp)
 app.register_blueprint(template_api_bp)
 app.register_blueprint(template_curve_api_bp)
-app.register_blueprint(burn_api_bp)
+app.register_blueprint(burn_api_bp, url_prefix='/api')
 app.register_blueprint(burn_notes_api_bp)
 app.register_blueprint(burn_curve_api_bp)
 app.register_blueprint(template_util_api_bp)
@@ -61,7 +61,7 @@ class ConfigObject:
 
 @socketio.on("connect", namespace="/ws/oven")
 def handle_connect():
-    print("Client connected to WebSocket")
+    #print("Client connected to WebSocket")
     emit("test_data", {"message": "Welcome! WebSocket is working."})
 
 @socketio.on("disconnect", namespace="/ws/oven")
@@ -72,17 +72,17 @@ def handle_disconnect():
 @socketio.on("start_test", namespace="/ws/oven")
 def start_test(data):
     oven_id = data.get("oven_id", "unknown")
-    print("oven_id")
+    #print("oven_id")
     oven_config = generic_service.execute_operation('OvenService', 'Get_By_Oven_Id', p_id=oven_id)
     wanted_oven = oven_config[0]
     wanted_oven = ConfigObject(wanted_oven)
-    print(wanted_oven)
-    print(f"starting {oven_id}")
+    #print(wanted_oven)
+    #print(f"starting {oven_id}")
     board = Board(wanted_oven)
     board.temp_sensor.run()
     for i in range(10):
         temp = board.temp_sensor.read_temp()
-        print(f"temp: {temp}")
+        #print(f"temp: {temp}")
         time.sleep(1)
         
     for i in range(10):

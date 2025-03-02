@@ -29,5 +29,5 @@ class FunctionServices:
                 })
             
         interpolated_data.append(data[-1])  # Add the last point
-        print(interpolated_data)
+        #print(interpolated_data)
         return interpolated_data

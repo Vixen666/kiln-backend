@@ -48,6 +48,7 @@ class Oven(threading.Thread):
         self.reset()
 
     def reset(self):
+        print("Oven reset")
         self.cost = 0
         self.state = "IDLE"
         self.previous_state = "IDLE"
@@ -60,6 +61,7 @@ class Oven(threading.Thread):
         self.pid = PID(self.config, ki=self.config.pid_ki, kd=self.config.pid_kd, kp=self.config.pid_kp)
 
     def run_profile(self, profile, startat=0):
+        print("Oven run_profile")
         self.reset()
         logmessages = []
         do_return = False
@@ -85,10 +87,11 @@ class Oven(threading.Thread):
         self.startat = startat
         self.runtime = self.startat
         self.start_time = datetime.datetime.now() - datetime.timedelta(seconds=self.startat)
+        #print(f'self.start_time {self.start_time}')
         self.profile = profile
         self.totaltime = profile.get_duration()
         self.state = "RUNNING"
-        print("Starting at",  self.start_time)
+        #print("Starting at",  self.start_time)
 
     def abort_run(self):
         self.reset()
@@ -102,7 +105,7 @@ class Oven(threading.Thread):
                 self.config.thermocouple_offset
             # kiln too cold, wait for it to heat up
             if self.target - temp > self.config.pid_control_window:
-                print("kiln must catch up, too cold, shifting schedule")
+                #print("kiln must catch up, too cold, shifting schedule")
                 message = "kiln must catch up, too cold, shifting schedule"
                 #generic_service.execute_operation('BurnTemperatureService', 'Insert', p_burn_id=self.burn_id, p_message=message)
                 print(message)
@@ -115,7 +118,6 @@ class Oven(threading.Thread):
                 self.start_time = datetime.datetime.now() - datetime.timedelta(milliseconds = self.runtime * 1000)
 
     def update_runtime(self):
-
         runtime_delta = datetime.datetime.now() - self.start_time
         if runtime_delta.total_seconds() < 0:
             runtime_delta = datetime.timedelta(0)
@@ -161,7 +163,7 @@ class Oven(threading.Thread):
     def reset_if_schedule_ended(self):
         if self.runtime > self.totaltime:
             message = "schedule ended, shutting down"
-            print(message)
+            #print(message)
             #generic_service.execute_operation('BurnTemperatureService', 'Insert', p_burn_id=self.burn_id, p_message=message)
             generic_service.execute_operation('BurnService', 'UpdateStatus', p_burn_id=self.burn_id, p_status='Finished')
 
@@ -169,6 +171,7 @@ class Oven(threading.Thread):
             self.abort_run()
 
     def update_cost(self):
+        return
         if self.heat:
             cost = (self.config.kwh_rate * self.config.kw_elements) * ((self.heat)/3600)
         else:
@@ -204,14 +207,17 @@ class Oven(threading.Thread):
                    False if younger
                    True if state file cannot be opened or does not exist
         '''
+        return False
         latest_temprow = generic_service.execute_operation('BurnTemperatureService', 'Get_Latest', p_burn_id=self.burn_id)
-        latest_timestamp = latest_temprow["timestamp"]
-        if latest_timestamp:
-            now = time.time()
-            minutes = (now - latest_timestamp)/60
-            if(minutes <= self.config.automatic_restart_window):
-                return False
-        return True
+        if latest_temprow:
+            latest_timestamp = latest_temprow["timestamp"]
+            if latest_timestamp:
+                now = time.time()
+                minutes = (now - latest_timestamp)/60
+                if(minutes <= self.config.automatic_restart_window):
+                    return False
+            return True
+        return False
 
 
     def should_i_automatic_restart(self):
@@ -220,21 +226,21 @@ class Oven(threading.Thread):
             return False
         if self.state_file_is_old():
             message = "Latest temperature is old or missing, cannot restart"
-            print(message)
+            #print(message)
             #generic_service.execute_operation('BurnTemperatureService', 'Insert', p_burn_id=self.burn_id, p_message=message)
             return False
 
         latest_burn_values = generic_service.execute_operation('BurnService', 'Get_By_Burn_Id', p_burn_id=self.burn_id)
-        if latest_burn_values["status"] != "In Process":
-            message = "automatic restart not possible. state = %s" % (d["status"])
-            print(message)
+        if latest_burn_values["status"] == "In Process123":
+            message = "automatic restart not possible. state = %s" % (["status"])
+            #print(message)
             #generic_service.execute_operation('BurnTemperatureService', 'Insert', p_burn_id=self.burn_id, p_message=message)
             return False
 
         return True
 
     def automatic_restart(self):
-        with open(config.automatic_restart_state_file) as infile: d = json.load(infile)
+        
         startat = d["runtime"]/60
         filename = "%s.json" % (d["profile"])
         profile_path = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'storage','profiles',filename))
@@ -274,13 +280,13 @@ class Oven(threading.Thread):
     def run(self):
         while True:
             self.check_open()
-            print(self.state)
             if self.state == "IDLE":
                 if self.should_i_automatic_restart() == True:
-                    self.automatic_restart()
+                    #self.automatic_restart()
+                    None
+                self.state = "RUNNING"
                 time.sleep(1)
                 self.previous_state = "IDLE"
-                continue
             if self.state == "RUNNING":
                 self.update_cost()
                 self.kiln_must_catch_up()

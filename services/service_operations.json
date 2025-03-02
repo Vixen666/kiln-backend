@@ -57,7 +57,7 @@
                     "kw_elements",
                     "hatchet_mode"
 ],
-      "fetch_mode": "all"
+      "fetch_mode": "none"
     }
   },
 

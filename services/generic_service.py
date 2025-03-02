@@ -33,4 +33,5 @@ class GenericService(BaseService):
 
         # Map kwargs to the parameters defined in the operation_config
         parameters = [kwargs[param] for param in operation_config['parameters'] if param in kwargs]
+        #print("parameters in execute_operation", parameters)
         return self.perform_db_operation(operation_name, parameters, fetch_mode=fetch_mode)

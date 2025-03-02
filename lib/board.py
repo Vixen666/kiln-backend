@@ -17,7 +17,7 @@ class ConfigObject:
 class Board(object):
     def __init__(self, wanted_oven):
         self.config = wanted_oven
-        print('Board', self.config)
+        #print('Board', self.config)
         self.name = None
         self.active = False
         self.temp_sensor = None

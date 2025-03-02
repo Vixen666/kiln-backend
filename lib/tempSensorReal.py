@@ -26,34 +26,29 @@ class TempSensorReal(TempSensor):
        during the time_step'''
     def __init__(self, wanted_oven):
         self.config = wanted_oven
-        print('TempSensorReal', self.config)
+        #print('TempSensorReal', self.config)
 
         TempSensor.__init__(self, self.config.sensor_time_wait)
         self.sleeptime = self.time_step / float(self.config.temperature_average_samples)
         self.bad_count = 0
         self.ok_count = 0
         self.bad_stamp = 0
-        self.config.thermocouple_type = 'DHT11';
-        config.gpio_sensor_cs = 12;
-        config.gpio_sensor_clock = 23;
-        config.gpio_sensor_data = 24;
-        config.gpio_sensor_di = 25;
 
         if self.config.thermocouple_type == 'MAX31855':
             log.info("init MAX31855")
             from max31855 import MAX31855, MAX31855Error
-            self.thermocouple = MAX31855(config.gpio_sensor_cs,
-                                     config.gpio_sensor_clock,
-                                     config.gpio_sensor_data,
-                                     config.temp_scale)
+            self.thermocouple = MAX31855(self.config.gpio_sensor_cs,
+                                     self.config.gpio_sensor_clock,
+                                     self.config.gpio_sensor_data,
+                                     self.config.temp_scale)
 
         if self.config.thermocouple_type == 'MAX31856':
             log.info("init MAX31856")
             from max31856 import MAX31856
-            software_spi = { 'cs': config.gpio_sensor_cs,
-                             'clk': config.gpio_sensor_clock,
-                             'do': config.gpio_sensor_data,
-                             'di': config.gpio_sensor_di }
+            software_spi = { 'cs': self.config.gpio_sensor_cs,
+                             'clk': self.config.gpio_sensor_clock,
+                             'do': self.config.gpio_sensor_data,
+                             'di': self.config.gpio_sensor_di }
             self.thermocouple = MAX31856(tc_type=MAX31856.MAX31856_S_TYPE,
                                          software_spi = software_spi,
                                          units = 'c', #config.temp_scale
@@ -61,7 +56,7 @@ class TempSensorReal(TempSensor):
                                          )
         
         if self.config.thermocouple_type == 'DHT11':
-            print('Sensor DHT11')
+            #print('Sensor DHT11')
             self.DHT_SENSOR = Adafruit_DHT.DHT11
             self.DHT_PIN = 23
 
@@ -108,7 +103,6 @@ class TempSensorReal(TempSensor):
                 humidity, temp = Adafruit_DHT.read_retry(self.DHT_SENSOR, self.DHT_PIN)
             elif self.config.thermocouple_type == 'DS1820':
                 temp = self.read_temp()
-                #print(temp)
             else:
                 temp = self.thermocouple.get()
                 self.noConnection = self.thermocouple.noConnection
@@ -116,7 +110,7 @@ class TempSensorReal(TempSensor):
                 self.shortToVCC = self.thermocouple.shortToVCC
                 self.unknownError = self.thermocouple.unknownError
             
-            print(f"temp in tempSensorReal {temp}")
+            #print(f"temp in tempSensorReal {temp}")
 
             is_bad_value = self.noConnection | self.unknownError
             #if not config.ignore_tc_short_errors:

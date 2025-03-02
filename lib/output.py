@@ -25,7 +25,7 @@ class Output(object):
                 GPIO.output(self.config.gpio_failsafe, GPIO.HIGH)
 
             if self.config.gpio_hatchet:
-                print(f"self.config.gpio_hatchet: {self.config.gpio_hatchet}")
+                #print(f"self.config.gpio_hatchet: {self.config.gpio_hatchet}")
                 GPIO.setup(self.config.gpio_hatchet, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)  # Pull-down to GND
             self.active = True
             self.GPIO = GPIO  # Assign after successful initialization
@@ -36,7 +36,7 @@ class Output(object):
             self.active = False
 
     def heat(self, sleepfor):
-        print(f"self.config.gpio_heat {self.config.gpio_heat}")
+        #print(f"self.config.gpio_heat {self.config.gpio_heat}")
         self.GPIO.output(self.config.gpio_heat, self.GPIO.HIGH)
         if self.config.gpio_cool:
             self.GPIO.output(self.config.gpio_cool, self.GPIO.LOW)
@@ -55,11 +55,11 @@ class Output(object):
         time.sleep(sleepfor)
         
     def failsafe(self):
-        print(f"self.config.gpio_failsafe {self.config.gpio_failsafe}")
+        #print(f"self.config.gpio_failsafe {self.config.gpio_failsafe}")
         self.GPIO.output(self.config.gpio_failsafe, self.GPIO.LOW)
         
     def hatchet(self):
-        print(f"self.GPIO.input(self.config.gpio_hatchet: {self.GPIO.input(self.config.gpio_hatchet)}")
+        #print(f"self.GPIO.input(self.config.gpio_hatchet: {self.GPIO.input(self.config.gpio_hatchet)}")
         if not self.config.gpio_hatchet:
             return -1
         return self.GPIO.input(self.config.gpio_hatchet)

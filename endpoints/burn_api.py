@@ -46,7 +46,27 @@ def create_burn_and_copy_curve(oven_id, template_id, description):
             connection.commit()
             return new_burn_id
     except Error as e:
-        print("Error while connecting to MySQL", e)
+        #print(("Error while connecting to MySQL", e)
+        if connection.is_connected():
+            connection.rollback()
+        return None
+    finally:
+        if connection.is_connected():
+            cursor.close()
+            connection.close()
+
+def copy_burn_parameters(burn_id):
+    try:
+        connection = get_db_connection()
+        if connection.is_connected():
+            cursor = connection.cursor()
+            
+            # Call the procedure to create a burn and get the new burn_id
+            cursor.callproc('Burn_Parameters_Api_Insert', [burn_id])
+
+            connection.commit()
+    except Error as e:
+        #print(("Error while connecting to MySQL", e)
         if connection.is_connected():
             connection.rollback()
         return None
@@ -63,7 +83,7 @@ def Burn_Api_Create_Burn():
     description = data.get('description', '')  # Default to empty string if not provided
     
     new_burn_id = create_burn_and_copy_curve(oven_id, template_id, description)
-    
+    #copy_burn_parameters(new_burn_id)
     if new_burn_id is not None:
         return jsonify({'message': 'Burn created successfully', 'burn_id': new_burn_id}), 200
     else:
@@ -77,10 +97,10 @@ def start_simulation():
     oven_id = data.get('oven_id')
     startat_ = data.get('startat_')
     #wanted_oven {PID, PINS, time_step}  = Oven_Api_Get_Setup(oven_id)
-    print("Staring Simulation")
+    #print(("Staring Simulation")
     oven_config = generic_service.execute_operation('OvenService', 'Get_By_Oven_Id', p_id=oven_id)
     wanted_oven = oven_config[0]
-    print(json.dumps(wanted_oven, indent=4))
+    #print((json.dumps(wanted_oven, indent=4))
     oven = SimulatedOven(wanted_oven)
     ovenWatcher = OvenWatcher(oven)
     wanted = profile_id
@@ -109,16 +129,12 @@ burn_lock = Lock()
 @bp.route('/start_real', methods=['POST'])
 def start_real():
     data = request.get_json()
-    print(data)
     burn_id = data.get('burn_id')
     burn_json = generic_service.execute_operation('BurnService', 'Get_By_Burn_Id', p_burn_id=burn_id)
-    print("burn_json", burn_json)
-    oven_id = burn_json[0]['oven_id']
-    print('oven_id', oven_id)
+    oven_id = burn_json['oven_id']
     startat_ = 0
-    print("Starting Real")
-    oven_config = generic_service.execute_operation('OvenService', 'Get_By_Oven_Id', p_id=oven_id)
-    wanted_oven = oven_config[0]
+    #print(("Starting Real")
+    wanted_oven = generic_service.execute_operation('OvenService', 'Get_By_Oven_Id', p_id=oven_id)
     wanted_oven = ConfigObject(wanted_oven)
     oven = RealOven(wanted_oven, burn_id)
     ovenWatcher = OvenWatcher(oven)
@@ -127,17 +143,22 @@ def start_real():
         startat = startat_
     
     profile_json = generic_service.execute_operation('BurnCurveService', 'Get_Curve_By_Id', p_burn_id=burn_id)
+    #print(("kommer man hit?!?!?")
+    #print((profile_json)
+    #print(("Och sen hit?!?!?")
     cumulative_time = 0
 
     transformed_data = {"data": []}
-    for entry in profile_json[0]:
-        cumulative_time += entry["time"]
-        transformed_data["data"].append([cumulative_time * 60, entry["temperature"]])
-    print('transformed_data', transformed_data)
+    for entry in profile_json:
+        #print((entry['time'], entry['temperature'])
+        cumulative_time += entry['time']
+        
+        transformed_data['data'].append([cumulative_time * 60, entry['temperature']])
+
     profile = Profile(transformed_data)
     oven.run_profile(profile, startat=startat)
     ovenWatcher.record(profile)
-    generic_service.execute_operation('BurnService', 'UpdateStatus', p_burn_id=burn_id, p_status='In Process')
+    #generic_service.execute_operation('BurnService', 'UpdateStatus', p_burn_id=burn_id, p_status='In Process')
     with burn_lock:
         ongoing_burns[burn_id] = oven
 
@@ -164,10 +185,6 @@ def start_test():
     oven_config = generic_service.execute_operation('OvenService', 'Get_By_Oven_Id', p_id=oven_id)
     wanted_oven = oven_config[0]
     wanted_oven = ConfigObject(wanted_oven)
-    print(wanted_oven)
-    print(f"starting {oven_id}")
-    print(wanted_oven.thermocouple_type)
-    print(f"Hatchet PIN: {wanted_oven.gpio_hatchet}")
     temp = 0
     
     if wanted_oven.thermocouple_type == 'MAX31855':
@@ -199,21 +216,21 @@ def start_test():
      
     
     if wanted_oven.thermocouple_type == 'DHT11':
-        print(f"reading DHT11??? {wanted_oven.gpio_sensor_cs}")
+        #print((f"reading DHT11??? {wanted_oven.gpio_sensor_cs}")
         humidity, temp = Adafruit_DHT.read_retry(Adafruit_DHT.DHT11, wanted_oven.gpio_sensor_cs)
     elif wanted_oven.thermocouple_type == 'DS1820':
         temp = read_temp(device_file)
     else:
         temp = thermocouple.get()
     
-    print(temp)
+    #print((temp)
     return {"temp": temp}, 200
 
 @bp.route('/test_hatchet', methods=['POST'])
 def test_hatchet():
     data = request.get_json()
     oven_id = data.get("oven_id", "unknown")
-    print("oven_id")
+    #print(("oven_id")
     oven_config = generic_service.execute_operation('OvenService', 'Get_By_Oven_Id', p_id=oven_id)
     wanted_oven = oven_config[0]
     wanted_oven = ConfigObject(wanted_oven)
@@ -224,6 +241,8 @@ def test_hatchet():
     
     hatchet_mode = wanted_oven.hatchet_mode
         
+        
+        
     if hatchet_mode == 'HIGH_OPEN':
         return {"hatchet":"OPEN"} if hatchet == 1 else {"hatchet":"CLOSED"}
     
@@ -233,7 +252,7 @@ def test_hatchet():
 def test_outputs():  
     data = request.get_json()
     oven_id = data.get("oven_id", "unknown")
-    print("oven_id")
+    #print(("oven_id")
     oven_config = generic_service.execute_operation('OvenService', 'Get_By_Oven_Id', p_id=oven_id)
     wanted_oven = oven_config[0]
     wanted_oven = ConfigObject(wanted_oven)

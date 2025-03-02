@@ -35,7 +35,7 @@ def Oven_Api_Create_Or_Update_Oven():
     data = request.json
     connection = get_db_connection()
     response = {}
-    print(data)
+    #print(data)
     
     if connection:
         cursor = connection.cursor()

@@ -45,7 +45,6 @@ def check_parameters(request, required_params):
 
 def do_POST_call(endpoint, parameters):
     try:
-        print('Do POST Call')
         # Assuming `get_db_connection` is a function that returns a database connection
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -74,7 +73,6 @@ def check_get_parameters(request, required_params):
 
 def do_GET_call(endpoint, parameters):
     try:
-        print("do_GET_call")
         # Assuming `get_db_connection` is a function that returns a database connection
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
@@ -108,11 +106,8 @@ def execute_generic_get(service_name, operation_key, parameters, function_servic
 
     # Assuming do_GET_call is a function that performs the required operations based on operation_name
     response, status_code = do_GET_call(endpoint_details['operation_name'], provided_parameters)
-    print("asdfasdfasdfasdfasdfasdfasdfasdfasdf")
-    print(endpoint_details)
         # Call the specified function if it exists
     function_name = endpoint_details.get('function_name')
-    print("function_name: ", function_name)
     if function_name:
         response = getattr(function_services, function_name)(response)
         

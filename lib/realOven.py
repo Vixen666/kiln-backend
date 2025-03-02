@@ -26,7 +26,7 @@ class RealOven(Oven):
 
     def __init__(self, wanted_oven, burn_id):
         self.config = wanted_oven
-        print('Real Oven Config', self.config)
+        print('Real Oven Init')
         self.board = Board(wanted_oven)
         self.output = Output(wanted_oven)
         self.burn_id = burn_id
@@ -40,7 +40,6 @@ class RealOven(Oven):
 
     def reset(self):
         super().reset()
-        self.output.cool(0)
 
     def heat_then_cool(self):
         pid = self.pid.compute(self.target,
@@ -78,7 +77,7 @@ class RealOven(Oven):
         
         
         try:
-            log.info("temp=%.2f, target=%.2f, error=%.2f, pid=%.2f, p=%.2f, i=%.2f, d=%.2f, heat_on=%.2f, heat_off=%.2f, run_time=%d, total_time=%d, time_left=%d" %
+            print("temp=%.2f, target=%.2f, error=%.2f, pid=%.2f, p=%.2f, i=%.2f, d=%.2f, heat_on=%.2f, heat_off=%.2f, run_time=%d, total_time=%d, time_left=%d" %
                 (self.pid.pidstats['ispoint'],
                 self.pid.pidstats['setpoint'],
                 self.pid.pidstats['err'],
