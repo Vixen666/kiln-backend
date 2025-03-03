@@ -23,6 +23,7 @@ from endpoints.burn_notes_api import bp as burn_notes_api_bp
 from endpoints.burn_curve_api import bp as burn_curve_api_bp
 from endpoints.template_util_api import bp as template_util_api_bp
 from endpoints.generic_api import bp as generic_api_bp
+from endpoints.test_api import bp as test_api_bp
 from lib.board import Board
 
 from services.function_services import FunctionServices
@@ -40,6 +41,7 @@ app.register_blueprint(oven_api_bp)
 app.register_blueprint(template_api_bp)
 app.register_blueprint(template_curve_api_bp)
 app.register_blueprint(burn_api_bp, url_prefix='/api')
+app.register_blueprint(test_api_bp, url_prefix='/api')
 app.register_blueprint(burn_notes_api_bp)
 app.register_blueprint(burn_curve_api_bp)
 app.register_blueprint(template_util_api_bp)
